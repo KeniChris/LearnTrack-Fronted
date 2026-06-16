@@ -1,0 +1,51 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">&#10003; {{ toast()?.msg }}</div>
+  }
+  @if (toast()?.type === 'error') {
+    <div class="toast error">&#10007; {{ toast()?.msg }}</div>
+  }
+
+  <nav class="breadcrumb">
+    <a routerLink="/docentes/colecciones">Mis colecciones</a> <span>/</span>
+    <a [routerLink]="['/docentes/colecciones', collectionName()]">{{ collectionName() }}</a> <span>/</span> Tema {{ topicId() }}
+  </nav>
+
+  <div class="page-header">
+    <h1>Actividades del tema</h1>
+    <button class="btn-accent" (click)="goNew()">+ Nueva Actividad</button>
+  </div>
+
+  <div class="tab-bar"><span class="tab-item active">📋 Actividades</span></div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Actividad</th><th>Preguntas</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="5" style="text-align:center;padding:24px;color:#999">Cargando...</td></tr>
+        }
+        @for (a of activities(); track a.id) {
+          <tr>
+            <td><strong>{{ a.title }}</strong></td>
+            <td>{{ a.questions?.length ?? 0 }}</td>
+            <td>
+              @if (a.generatedByAi) {
+                <span class="badge purple">IA</span>
+              } @else {
+                <span class="badge gray">Manual</span>
+              }
+            </td>
+            <td><span class="badge" [class]="a.status === 'ACTIVE' ? 'green' : 'gray'">{{ a.status ?? '-' }}</span></td>
+            <td>
+              <button class="btn-icon" (click)="deleteActivity(a.id)" title="Eliminar">🗑️</button>
+            </td>
+          </tr>
+        }
+        @if (!loading() && activities().length === 0) {
+          <tr><td colspan="5" style="text-align:center;color:#999;padding:24px">No hay actividades aún</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

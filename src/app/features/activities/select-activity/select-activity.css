@@ -1,0 +1,8 @@
+.page-title { font-size:26px; font-weight:700; margin-bottom:6px; }
+.page-sub { color:#666; font-size:14px; margin-bottom:32px; }
+.option-cards { display:flex; gap:24px; flex-wrap:wrap; }
+.option-card { background:white; border-radius:16px; padding:32px; box-shadow:0 2px 8px rgba(0,0,0,.08); flex:1; min-width:260px; max-width:340px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; cursor:pointer; transition:box-shadow .2s; }
+.option-card:hover { box-shadow:0 6px 20px rgba(0,0,0,.14); }
+.option-icon { font-size:40px; }
+.option-card h3 { font-size:18px; font-weight:700; }
+.option-card p { color:#666; font-size:13px; }
