@@ -1,0 +1,2 @@
+.app-layout { display: flex; min-height: 100vh; }
+.app-main { margin-left: 110px; flex: 1; background: var(--color-gray-50); min-height: 100vh; }
