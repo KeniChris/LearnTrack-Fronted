@@ -50,7 +50,6 @@ export class CollectionDetail implements OnInit {
     this.nameError.set('');
     this.loading.set(false);
   }
-
   goTopic(id: number): void {
     this.router.navigate(['/docentes/colecciones', this.collectionName(), 'temas', id]);
   }
@@ -64,3 +63,4 @@ export class CollectionDetail implements OnInit {
     setTimeout(() => this.toast.set(null), 4000);
   }
 }
+
