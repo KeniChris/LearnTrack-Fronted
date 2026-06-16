@@ -1,0 +1,47 @@
+<div class="page-container">
+  <nav class="breadcrumb">
+    <a routerLink="/docentes/estudiantes">Mis estudiantes</a> <span>/</span>
+    <a [routerLink]="['/docentes/estudiantes', groupCode()]">{{ groupCode() }}</a> <span>/</span> Ruta de aprendizaje
+  </nav>
+
+  <h1 class="page-title">Ruta de aprendizaje</h1>
+  <p class="page-sub">Progreso de los estudiantes en la colección</p>
+
+  @if (loading()) {
+    <div class="empty-state"><p class="empty-msg">Cargando...</p></div>
+  }
+
+  @if (!loading() && paths().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">🗺️</div>
+      <p class="empty-msg">No hay datos de ruta de aprendizaje</p>
+      <p class="empty-sub">Aparecerán cuando los estudiantes completen actividades</p>
+    </div>
+  }
+
+  @for (p of paths(); track p.studentEmail) {
+    <div class="path-card">
+      <div class="path-header">
+        <div class="path-avatar">{{ p.studentName?.charAt(0) ?? '?' }}</div>
+        <div style="flex:1">
+          <strong>{{ p.studentName }}</strong>
+          <p style="font-size:12px;color:#666;margin:0">{{ p.studentEmail }}</p>
+          <p style="font-size:11px;color:#888;margin:0">{{ p.collectionName }}</p>
+        </div>
+        <div class="path-overall" [style.color]="(p.completionRate ?? 0) >= 70 ? '#2D7D52' : (p.completionRate ?? 0) >= 40 ? '#C0850A' : '#C0392B'">
+          {{ p.completionRate ?? 0 }}%
+        </div>
+      </div>
+      <div class="path-progress-row">
+        <span style="font-size:12px;color:#666">Temas completados: {{ p.completedTopics ?? 0 }} / {{ p.totalTopics ?? 0 }}</span>
+        <div class="progress-bar" style="flex:1;margin:0 12px">
+          <div class="progress-fill"
+            [style.width.%]="p.completionRate ?? 0"
+            [style.background]="(p.completionRate ?? 0) >= 70 ? '#5BC08A' : (p.completionRate ?? 0) >= 40 ? '#F4A261' : '#E76F51'">
+          </div>
+        </div>
+        <span class="path-status-badge" [class]="'status-' + (p.status ?? 'pending')">{{ p.status ?? 'Pendiente' }}</span>
+      </div>
+    </div>
+  }
+</div>
