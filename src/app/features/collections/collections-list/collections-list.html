@@ -1,0 +1,66 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">✅ {{ toast()?.msg }}</div>
+  }
+  @if (toast()?.type === 'error') {
+    <div class="toast error">❌ {{ toast()?.msg }}</div>
+  }
+
+  <div class="page-header">
+    <div>
+      <h1>Mis colecciones</h1>
+      <p class="page-subtitle">Organiza tus temas y accede a la información de cada colección</p>
+    </div>
+    <button class="btn-accent" (click)="showModal.set(true)">+ Nueva colección</button>
+  </div>
+
+  <div class="grid">
+    @for (c of collections(); track c.id; let i = $index) {
+      <div class="col-card">
+        <div class="col-icon">{{ icons[i % icons.length] }}</div>
+        <div class="col-body">
+          <h3>{{ c.name }}</h3>
+          <p>{{ c.description || 'Sin descripción' }}</p>
+        </div>
+        <div class="col-actions">
+          <button (click)="goDetail(c.name)">Ver detalle ></button>
+          <button class="stats-link" (click)="goStats(c.name)">Ver estadísticas ></button>
+        </div>
+      </div>
+    }
+    @if (collections().length === 0) {
+      <p class="no-data">No tienes colecciones. ¡Crea una!</p>
+    }
+  </div>
+
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Crear Nueva Colección</h3>
+        <div class="form-field">
+          <input class="form-input" [class.error]="nameError()" placeholder="Nombre de la colección"
+            [(ngModel)]="newName" (ngModelChange)="nameError.set('')" />
+          @if (nameError()) {
+            <span class="field-error">{{ nameError() }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label>Vincular a grupos</label>
+          <div class="chips-group">
+            @for (g of groups(); track g.id) {
+              <span class="chip" [class.selected]="selectedGroups().includes(g.code)"
+                (click)="toggleGroup(g.code)">{{ g.code }}</span>
+            }
+            @if (groups().length === 0) {
+              <span style="font-size:12px;color:#999">No tienes grupos aún</span>
+            }
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="create()" [disabled]="loading()">{{ loading() ? 'Creando...' : 'Aceptar' }}</button>
+          <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,11 @@
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.col-card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.08); display:flex; gap:16px; flex-wrap:wrap; }
+.col-icon { width:52px; height:52px; background:#EDE8F7; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.col-body { flex:1; }
+.col-body h3 { font-size:15px; font-weight:600; margin-bottom:4px; }
+.col-body p { font-size:12px; color:#666; line-height:1.4; }
+.col-actions { display:flex; gap:12px; width:100%; }
+.col-actions button { background:none; font-size:12px; color:#7C5CBF; font-weight:500; cursor:pointer; }
+.col-actions button:hover { text-decoration:underline; }
+.stats-link { color:#0E9EA6 !important; }
+.no-data { color:#666; font-size:14px; }

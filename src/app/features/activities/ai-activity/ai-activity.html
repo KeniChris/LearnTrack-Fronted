@@ -1,0 +1,61 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">&#10003; {{ toast()?.msg }}</div>
+  }
+  @if (toast()?.type === 'error') {
+    <div class="toast error">&#10007; {{ toast()?.msg }}</div>
+  }
+
+  <nav class="breadcrumb">
+    <a routerLink="/docentes/colecciones">Mis colecciones</a> <span>/</span>
+    <a [routerLink]="['/docentes/colecciones', collectionName]">{{ collectionName }}</a> <span>/</span>
+    <a [routerLink]="['/docentes/colecciones', collectionName, 'temas', topicId]">Tema {{ topicId }}</a>
+    <span>/</span> Generar con IA
+  </nav>
+
+  <h1 class="page-title">Generar Actividad con IA</h1>
+  <p class="page-sub">Sube un PDF y la IA generará preguntas automáticamente</p>
+
+  <div class="form-card">
+    <div class="form-field">
+      <label class="form-label">Nombre del tema</label>
+      <input class="form-input" [class.error]="topicError()" placeholder="Ej: Fotosíntesis"
+        [value]="topicName()" (input)="topicName.set($any($event.target).value); topicError.set('')" />
+      @if (topicError()) { <span class="field-error">{{ topicError() }}</span> }
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Archivo PDF <span style="color:#999;font-size:12px">(máx. 5 MB)</span></label>
+      <div class="file-drop" [class.has-file]="selectedFile()">
+        <input type="file" accept=".pdf" class="file-input" (change)="onFileChange($event)" />
+        @if (selectedFile()) {
+          <span class="file-name">📄 {{ selectedFile()!.name }}</span>
+        } @else {
+          <span class="file-placeholder">Arrastra un PDF aquí o <u>haz clic para seleccionar</u></span>
+        }
+      </div>
+      @if (fileError()) { <span class="field-error">{{ fileError() }}</span> }
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Tipos de pregunta</label>
+      <div class="types-row">
+        @for (type of allTypes; track type) {
+          <label class="type-checkbox" [class.selected]="selectedTypes().includes(type)">
+            <input type="checkbox" [checked]="selectedTypes().includes(type)" (change)="toggleType(type)" />
+            {{ type === 'MULTIPLE_CHOICE' ? 'Opción múltiple' : type === 'TRUE_FALSE' ? 'Verdadero / Falso' : 'Completar' }}
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-accent" (click)="upload()" [disabled]="loading()">
+        {{ loading() ? '🤖 Generando...' : '🤖 Generar actividad' }}
+      </button>
+      <button class="btn-secondary" [routerLink]="['/docentes/colecciones', collectionName, 'temas', topicId, 'actividades', 'nueva']">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

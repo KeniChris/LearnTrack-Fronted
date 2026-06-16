@@ -1,0 +1,64 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">&#10003; {{ toast()?.msg }}</div>
+  }
+  @if (toast()?.type === 'error') {
+    <div class="toast error">&#10007; {{ toast()?.msg }}</div>
+  }
+
+  <div class="page-header">
+    <div>
+      <h1>Mis estudiantes</h1>
+      <p class="page-sub">Gestiona los grupos y estudiantes</p>
+    </div>
+    <button class="btn-accent" (click)="showModal.set(true)">+ Nuevo Grupo</button>
+  </div>
+
+  <div class="tab-bar"><span class="tab-item active">👥 Grupos</span></div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Nombre del grupo</th><th>Código</th><th>Estudiantes</th><th>Acciones</th></tr></thead>
+      <tbody>
+        @for (g of groups(); track g.id) {
+          <tr class="clickable" [routerLink]="['/docentes/estudiantes', g.code]">
+            <td><strong>{{ g.name }}</strong></td>
+            <td><span class="code-chip">{{ g.code }}</span></td>
+            <td>{{ g.studentsCount ?? 0 }} alumnos</td>
+            <td>
+              <a class="btn-icon" [routerLink]="['/docentes/estudiantes', g.code, 'estadisticas']" title="Estadísticas" (click)="$event.stopPropagation()">📊</a>
+              <a class="btn-icon" [routerLink]="['/docentes/estudiantes', g.code, 'ruta']" title="Ruta de aprendizaje" (click)="$event.stopPropagation()">🗺️</a>
+            </td>
+          </tr>
+        }
+        @if (groups().length === 0) {
+          <tr><td colspan="4" style="text-align:center;color:#999;padding:24px">No tienes grupos aún</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Crear Nuevo Grupo</h3>
+        <div class="form-field">
+          <label class="form-label">Nombre del grupo</label>
+          <input class="form-input" [class.error]="nameError()" placeholder="Ej: Algoritmos 2025"
+            [value]="groupName()" (input)="groupName.set($any($event.target).value); nameError.set('')" />
+          @if (nameError()) { <span class="field-error">{{ nameError() }}</span> }
+        </div>
+        <div class="form-field">
+          <label class="form-label">Código del grupo</label>
+          <input class="form-input" [class.error]="codeError()" placeholder="Ej: CC23" style="text-transform:uppercase"
+            [value]="groupCode()" (input)="groupCode.set($any($event.target).value.toUpperCase()); codeError.set('')" />
+          @if (codeError()) { <span class="field-error">{{ codeError() }}</span> }
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="create()" [disabled]="loading()">{{ loading() ? 'Creando...' : 'Crear' }}</button>
+          <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,57 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">&#10003; {{ toast()?.msg }}</div>
+  }
+
+  <nav class="breadcrumb">
+    <a routerLink="/docentes/colecciones">Mis colecciones</a> <span>/</span> {{ collectionName() }}
+  </nav>
+
+  <div class="page-header">
+    <h1>{{ collectionName() }}</h1>
+    <div style="display:flex;gap:12px">
+      <button class="btn-outline" (click)="goStats()">+ Ver estadísticas</button>
+      <button class="btn-accent" (click)="showModal.set(true)">+ Nuevo Tema</button>
+    </div>
+  </div>
+
+  <div class="tab-bar"><span class="tab-item active">📋 Temas</span></div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Tema</th><th>N° de actividades</th></tr></thead>
+      <tbody>
+        @for (t of topics(); track t.id) {
+          <tr class="clickable" (click)="goTopic(t.id)">
+            <td><strong>{{ t.name }}</strong></td>
+            <td>🔵</td>
+          </tr>
+        }
+        @if (topics().length === 0) {
+          <tr>
+            <td colspan="3" style="text-align:center;color:#999;padding:24px">No hay temas aún</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Crear Nuevo Tema</h3>
+        <div class="form-field">
+          <input class="form-input" [class.error]="nameError()" placeholder="Nombre del tema"
+            [(ngModel)]="topicName" (ngModelChange)="nameError.set('')" />
+          @if (nameError()) {
+            <span class="field-error">{{ nameError() }}</span>
+          }
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="create()" [disabled]="loading()">{{ loading() ? 'Creando...' : 'Aceptar' }}</button>
+          <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
