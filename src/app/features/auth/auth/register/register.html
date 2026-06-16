@@ -1,0 +1,134 @@
+<div class="register-page">
+  <!-- STEP 1: Datos personales -->
+  @if (step() === 1) {
+    <div class="register-card">
+      <div class="register-logo">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="16" fill="#1E1E3A"/>
+          <path d="M20 46 L32 18 L44 46" stroke="#00E5FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M24 36 L40 36" stroke="#B06EFF" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="44" cy="22" r="5" fill="#7C5CBF"/>
+          <path d="M44 28 L50 38" stroke="#00E5FF" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Crear cuenta docente</h1>
+      <p class="subtitle">Completa los datos para comenzar</p>
+
+      <form (ngSubmit)="step1Continue()">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input type="text" [(ngModel)]="firstName" name="firstName" placeholder="Tu nombre completo"
+            [class.invalid]="firstNameError()" (input)="firstNameError.set('')" />
+          @if (firstNameError()) { <span class="field-error">{{ firstNameError() }}</span> }
+        </div>
+
+        <div class="field">
+          <label>Apellido completo</label>
+          <input type="text" [(ngModel)]="lastName" name="lastName" placeholder="Tu nombre completo"
+            [class.invalid]="lastNameError()" (input)="lastNameError.set('')" />
+          @if (lastNameError()) { <span class="field-error">{{ lastNameError() }}</span> }
+        </div>
+
+        <div class="field">
+          <label>Correo institucional</label>
+          <input type="email" [(ngModel)]="email" name="email" placeholder="ejemplo@upc.edu.pe"
+            [class.invalid]="emailError()" (input)="emailError.set('')" />
+          @if (emailError()) { <span class="field-error">{{ emailError() }}</span> }
+        </div>
+
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" [(ngModel)]="password" name="password" placeholder="Ingrese su contraseña"
+            [class.invalid]="passwordError()" (input)="passwordError.set('')" />
+          @if (passwordError()) { <span class="field-error">{{ passwordError() }}</span> }
+        </div>
+
+        <div class="field">
+          <label>Confirmar contraseña</label>
+          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••••••••"
+            [class.invalid]="confirmError()" (input)="confirmError.set('')" />
+          @if (confirmError()) { <span class="field-error">{{ confirmError() }}</span> }
+        </div>
+
+        <button type="submit">Continuar</button>
+      </form>
+
+      <p class="switch-link">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  }
+
+  <!-- STEP 2: Cursos -->
+  @if (step() === 2) {
+    <div class="register-card">
+      <div class="register-logo">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="16" fill="#1E1E3A"/>
+          <path d="M20 46 L32 18 L44 46" stroke="#00E5FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M24 36 L40 36" stroke="#B06EFF" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="44" cy="22" r="5" fill="#7C5CBF"/>
+          <path d="M44 28 L50 38" stroke="#00E5FF" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Crear cuenta</h1>
+      <p class="subtitle">Selecciona los cursos que enseña</p>
+
+      @if (backendError()) {
+        <p class="field-error general-error">{{ backendError() }}</p>
+      }
+
+      <div class="course-list">
+        @for (course of courses; track course) {
+          <label class="course-item" [class.selected]="selectedCourses().includes(course)">
+            <input type="checkbox" [checked]="selectedCourses().includes(course)"
+              (change)="toggleCourse(course)" />
+            <span class="checkbox-box"></span>
+            <span class="course-name">{{ course }}</span>
+          </label>
+        }
+      </div>
+
+      <button (click)="step2Continue()" [disabled]="loading()">
+        {{ loading() ? 'Registrando...' : 'Continuar' }}
+      </button>
+      <p class="switch-link">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  }
+
+  <!-- STEP 3: Verificación de código -->
+  @if (step() === 3) {
+    <div class="register-card code-card">
+      <h2>Se le envió un codigo<br>a su correo.</h2>
+      <p class="subtitle">Escriba los 4 dígitos que se le envió</p>
+
+      <div class="code-inputs">
+        @for (digit of codeDigits; track $index) {
+          <input #digitInput type="text" inputmode="numeric" maxlength="1"
+            class="digit-box"
+            [class.filled]="codeDigits[$index]"
+            (input)="onDigitInput($event, $index)"
+            (keydown)="onDigitKeydown($event, $index)" />
+        }
+      </div>
+
+      @if (codeError()) {
+        <p class="field-error">{{ codeError() }}</p>
+      }
+
+      <div class="code-actions">
+        <button class="btn-outline" (click)="step.set(2)">Regresar</button>
+        <button class="btn-filled" (click)="submitCode()">Enviar</button>
+      </div>
+
+      <p class="switch-link">¿No te llegó el código? <a href="#" (click)="$event.preventDefault()">Reenviar</a></p>
+    </div>
+  }
+
+  <!-- STEP 4: Éxito -->
+  @if (step() === 4) {
+    <div class="register-card success-card">
+      <h2>¡Gracias por querer<br>unirse a nuestra<br>comunidad!</h2>
+      <p class="success-sub">Espere que el administrador<br>acepte su registro.</p>
+      <button (click)="goLogin()">Iniciar Sesión</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,23 @@
+<div class="page-container">
+  <nav class="breadcrumb">
+    <a [routerLink]="['/docentes/colecciones', collectionName, 'temas', topicId]">{{ topicId }}</a> <span>/</span> Nueva actividad
+  </nav>
+
+  <h1 class="page-title">¿Cómo deseas crear la actividad?</h1>
+  <p class="page-sub">Elige entre crear manualmente o usar la IA para generar las preguntas</p>
+
+  <div class="option-cards">
+    <div class="option-card" (click)="goManual()">
+      <div class="option-icon">✏️</div>
+      <h3>Creación Manual</h3>
+      <p>Crea tus propias preguntas y respuestas de forma personalizada</p>
+      <button class="btn-accent">Crear manualmente</button>
+    </div>
+    <div class="option-card" (click)="goAI()">
+      <div class="option-icon">🤖</div>
+      <h3>Generación con IA</h3>
+      <p>Genera preguntas automáticamente usando inteligencia artificial</p>
+      <button class="btn-dark">Generar con IA</button>
+    </div>
+  </div>
+</div>
