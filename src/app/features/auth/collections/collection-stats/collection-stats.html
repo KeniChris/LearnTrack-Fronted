@@ -1,0 +1,133 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">&#10003; {{ toast()?.msg }}</div>
+  }
+  @if (toast()?.type === 'error') {
+    <div class="toast error">&#10007; {{ toast()?.msg }}</div>
+  }
+
+  <nav class="breadcrumb">
+    <a routerLink="/docentes/colecciones">Mis colecciones</a> <span>/</span>
+    <a [routerLink]="['/docentes/colecciones', collectionName()]">{{ collectionName() }}</a> <span>/</span> Estadísticas
+  </nav>
+
+  <div class="stats-header">
+    <h1>Dashboard de colección</h1>
+    <button class="btn-dark" (click)="showReportModal.set(true)">Enviar reporte PDF</button>
+  </div>
+
+  <div class="filters-row">
+    <div class="filter-group">
+      <label>Mes</label>
+      <select [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)">
+        @for (m of months; track m; let i = $index) {
+          <option [value]="i">{{ m }} {{ selectedYear() }}</option>
+        }
+      </select>
+    </div>
+    <button class="btn-accent" (click)="load()">Aplicar filtro</button>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-icon">📊</div><div><div class="kpi-value">{{ avgScore() }}%</div><div class="kpi-label">Promedio general</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon">📝</div><div><div class="kpi-value">{{ topicStats().length }}</div><div class="kpi-label">Temas evaluados</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon">👥</div><div><div class="kpi-value">{{ groupStats().length }}</div><div class="kpi-label">Grupos evaluados</div></div></div>
+  </div>
+
+  <div class="tab-bar">
+    <span class="tab-item" [class.active]="tab() === 'tema'" (click)="tab.set('tema')">📊 Rendimiento por tema</span>
+    <span class="tab-item" [class.active]="tab() === 'grupos'" (click)="tab.set('grupos')">👥 Comparativa por grupos</span>
+  </div>
+
+  <div class="chart-card">
+    @if (!loading()) {
+      @if (tab() === 'tema') {
+        @if (topicStats().length > 0) {
+          <h3 class="chart-title">Rendimiento general por tema</h3>
+          <p class="chart-sub">% de respuestas correctas</p>
+          <div class="bar-chart">
+            @for (s of topicStats(); track s.topicName) {
+              <div class="bar-col">
+                <div class="bar-wrap">
+                  <span class="bar-pct">{{ s.averageScore }}%</span>
+                  <div class="bar" [style.height.%]="s.averageScore"></div>
+                </div>
+                <span class="bar-label">{{ s.topicName }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <p class="empty-msg">No hay resultados para este periodo</p>
+            <p class="empty-sub">Se registrarán cuando los alumnos completen actividades</p>
+          </div>
+        }
+      }
+
+      @if (tab() === 'grupos') {
+        @if (groupStats().length > 0) {
+          <h3 class="chart-title">Comparativa por grupos</h3>
+          <p class="chart-sub">% de respuestas correctas</p>
+          <div class="bar-chart grouped">
+            @for (g of groupStats(); track g.groupCode) {
+              <div class="bar-col">
+                <div class="group-bars">
+                  @for (topic of allTopics(); track topic; let ci = $index) {
+                    <div class="bar-wrap">
+                      <div class="bar" [style.height.%]="getGroupValue(g, topic)"
+                        [style.background]="ci===0?'#7C5CBF':ci===1?'#B8F2F4':'#9B7FD4'"></div>
+                    </div>
+                  }
+                </div>
+                <span class="bar-label">{{ g.groupCode }}</span>
+              </div>
+            }
+          </div>
+          <div class="legend">
+            @for (t of allTopics(); track t; let ci = $index) {
+              <span class="legend-item">
+                <span class="legend-dot" [style.background]="ci===0?'#7C5CBF':ci===1?'#B8F2F4':'#9B7FD4'"></span>{{ t }}
+              </span>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <p class="empty-msg">No hay resultados para este periodo</p>
+          </div>
+        }
+      }
+    } @else {
+      <div class="empty-state"><p class="empty-msg">Cargando...</p></div>
+    }
+  </div>
+
+  <p class="note-bar">ℹ️ Los gráficos se actualizan automáticamente según el rango seleccionado</p>
+
+  @if (showReportModal()) {
+    <div class="modal-overlay" (click)="showReportModal.set(false)">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Generar Reporte PDF</h3>
+        <p style="font-size:13px;color:#666;margin-bottom:16px">Colección: <strong>{{ collectionName() }}</strong></p>
+        <div class="form-field">
+          <label class="form-label">Código de grupo</label>
+          <input class="form-input" [class.error]="reportGroupCodeError()" placeholder="Ej: GRP-2024-A"
+            [value]="reportGroupCode()" (input)="reportGroupCode.set($any($event.target).value); reportGroupCodeError.set('')" />
+          @if (reportGroupCodeError()) { <span class="field-error">{{ reportGroupCodeError() }}</span> }
+        </div>
+        <div class="form-field">
+          <label class="form-label">Correo adicional <span style="color:#999;font-size:12px">(opcional)</span></label>
+          <input class="form-input" type="email" placeholder="otro@correo.com"
+            [value]="optionalEmail()" (input)="optionalEmail.set($any($event.target).value)" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="sendReport()" [disabled]="sending()">
+            {{ sending() ? 'Generando...' : 'Generar y enviar' }}
+          </button>
+          <button class="btn-secondary" (click)="showReportModal.set(false)">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
