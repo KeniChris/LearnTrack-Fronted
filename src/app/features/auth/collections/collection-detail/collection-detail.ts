@@ -51,16 +51,3 @@ export class CollectionDetail implements OnInit {
     this.loading.set(false);
   }
 
-  goTopic(id: number): void {
-    this.router.navigate(['/docentes/colecciones', this.collectionName(), 'temas', id]);
-  }
-
-  goStats(): void {
-    this.router.navigate(['/docentes/colecciones', this.collectionName(), 'estadisticas']);
-  }
-
-  showToast(msg: string, type: string): void {
-    this.toast.set({ msg, type });
-    setTimeout(() => this.toast.set(null), 4000);
-  }
-}
