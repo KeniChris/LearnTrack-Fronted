@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Group, Student, StudentLearningPath } from '../../shared/models/models';
+import { Group, Student, StudentLearningPath, GroupBlindSpots } from '../../shared/models/models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -31,5 +31,9 @@ export class GroupService {
 
   getLearningPaths(groupCode: string): Observable<StudentLearningPath[]> {
     return this.http.get<StudentLearningPath[]>(`${environment.apiUrl}/groups/${groupCode}/learning-paths`);
+  }
+
+  getGroupBlindSpots(groupCode: string): Observable<GroupBlindSpots> {
+    return this.http.get<GroupBlindSpots>(`${this.base}/${groupCode}/blind-spots`);
   }
 }

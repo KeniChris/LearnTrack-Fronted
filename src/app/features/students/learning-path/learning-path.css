@@ -1,13 +1,227 @@
-.page-title { font-size:26px; font-weight:700; margin-bottom:6px; }
-.page-sub { color:#666; font-size:14px; margin-bottom:24px; }
-.path-card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:16px; }
-.path-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-.path-avatar { width:42px; height:42px; border-radius:50%; background:#7C5CBF; color:white; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.path-overall { font-size:24px; font-weight:700; min-width:52px; text-align:right; }
-.path-progress-row { display:flex; align-items:center; gap:8px; }
-.progress-bar { height:8px; background:#E0E0E0; border-radius:4px; overflow:hidden; }
-.progress-fill { height:100%; border-radius:4px; transition:width .3s; }
-.path-status-badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; white-space:nowrap; background:#EDE9F7; color:#7C5CBF; }
-.status-completed { background:#E8F8F0; color:#2D7D52; }
-.status-in_progress { background:#FFF3E0; color:#C0850A; }
-.status-pending { background:#F5F5F5; color:#888; }
+/* ─── Layout ─────────────────────────────────────────── */
+.lp-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 14px;
+}
+.lp-breadcrumb a {
+  color: #999;
+  text-decoration: none;
+}
+.lp-breadcrumb a:hover { color: #7C5CBF; }
+.bc-sep { color: #ccc; }
+
+.lp-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 10px 0;
+}
+
+.lp-group-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.lp-group-code {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+}
+.lp-group-sub {
+  font-size: 13px;
+  color: #888;
+}
+
+/* ─── Card ───────────────────────────────────────────── */
+.lp-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.lp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.lp-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+.lp-card-hint {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* ─── Table ──────────────────────────────────────────── */
+.lp-table-wrap { overflow-x: auto; }
+
+.lp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lp-table th {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  letter-spacing: 0.04em;
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid #F0EDF8;
+  white-space: nowrap;
+}
+.lp-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #F9F7FD;
+  font-size: 14px;
+  color: #333;
+  vertical-align: middle;
+}
+
+/* Column widths */
+.th-tema    { width: 180px; }
+.th-nivel   { width: 220px; }
+.th-estado  { width: 130px; }
+.th-accion  { width: 180px; }
+.th-subtopic {
+  color: #7C5CBF !important;
+  font-style: italic;
+  font-size: 12px !important;
+}
+.sub-arrow { color: #7C5CBF; }
+.th-ctrl {
+  width: 34px;
+  text-align: center;
+  cursor: pointer;
+  color: #bbb !important;
+}
+.th-ctrl:hover { color: #7C5CBF !important; }
+.th-expand-empty { width: 50px; }
+
+/* ─── Topic row status tints ─────────────────────────── */
+.topic-row { background: white; }
+.topic-row.row-critico           { background: #FFF1F0; }
+.topic-row.row-critico.expanded  { background: #FFE9E7; }
+.topic-row.row-bajo              { background: white; }
+.topic-row.row-optimo            { background: white; }
+
+/* ─── Subtopic rows ──────────────────────────────────── */
+.subtopic-row td {
+  background: #FFF6F5;
+  border-bottom: 1px solid #FFE8E5;
+}
+.td-sub-info {
+  font-size: 13px;
+  color: #D04030;
+  padding-left: 28px !important;
+  font-style: italic;
+}
+
+/* ─── Level / Progress ───────────────────────────────── */
+.level-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lp-bar {
+  flex: 1;
+  height: 7px;
+  background: #EDE9F7;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 90px;
+}
+.lp-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+.lp-pct {
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  min-width: 34px;
+}
+
+/* ─── Status badge ───────────────────────────────────── */
+.st-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.st-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ─── Refuerzo badge ─────────────────────────────────── */
+.refuerzo-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 20px;
+  background: #FFF3E0;
+  color: #C0850A;
+}
+
+/* ─── Buttons ────────────────────────────────────────── */
+.resource-btn {
+  background: none;
+  border: none;
+  color: #7C5CBF;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.resource-btn:hover { color: #5a3d9e; }
+
+.ver-recurso-btn {
+  background: white;
+  border: 1px solid #D0C8E8;
+  color: #7C5CBF;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ver-recurso-btn:hover { background: #F0EDF8; }
+
+/* ─── Toggle ─────────────────────────────────────────── */
+.td-toggle { text-align: center; }
+.toggle-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.toggle-btn:hover {
+  background: #F0EDF8;
+  color: #7C5CBF;
+}

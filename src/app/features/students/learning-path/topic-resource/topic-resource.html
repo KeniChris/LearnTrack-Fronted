@@ -1,0 +1,29 @@
+<div class="page-container">
+
+  <nav class="lp-breadcrumb">
+    <a routerLink="/docentes/estudiantes">Estudiantes</a>
+    <span class="bc-sep">/</span>
+    <a [routerLink]="['/docentes/estudiantes', groupCode(), 'ruta']">Ruta de Aprendizaje</a>
+    <span class="bc-sep">/</span>
+    <span>Recurso Sugerido</span>
+  </nav>
+
+  <h1 class="lp-title">Recurso Sugerido</h1>
+  <div class="lp-group-row">
+    <span class="lp-group-sub">Tema: <strong>{{ topicName() }}</strong></span>
+  </div>
+
+  <div class="resource-card">
+    <div class="empty-state">
+      <div class="empty-icon">📚</div>
+      <p class="empty-msg">Recurso en construcción</p>
+      <p class="empty-sub">El material de apoyo para este tema estará disponible pronto</p>
+    </div>
+    <div class="resource-actions">
+      <a [routerLink]="['/docentes/estudiantes', groupCode(), 'ruta']" class="btn-outline">
+        ← Volver a la Ruta
+      </a>
+    </div>
+  </div>
+
+</div>

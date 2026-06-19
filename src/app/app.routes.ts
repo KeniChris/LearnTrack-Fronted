@@ -74,8 +74,20 @@ export const routes: Routes = [
       },
       {
         path: 'estudiantes/:groupCode/ruta',
-        loadComponent: () =>
-          import('./features/students/learning-path/learning-path').then(m => m.LearningPath),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/students/learning-path/learning-path').then(m => m.LearningPath),
+          },
+          {
+            path: 'temas/:topicName',
+            loadComponent: () =>
+              import('./features/students/learning-path/topic-resource/topic-resource').then(
+                m => m.TopicResource
+              ),
+          },
+        ],
       },
     ],
   },

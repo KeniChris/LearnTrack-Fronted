@@ -84,3 +84,24 @@ export interface PdfReport {
   sentTo?: string;
   createdAt?: string;
 }
+
+export interface SubtopicBlindSpot {
+  name: string;
+  failureRate: number;
+  status: string;
+  resource?: string;
+}
+
+export interface TopicBlindSpot {
+  topicName: string;
+  assimilationLevel: number;
+  status: 'Crítico' | 'Bajo' | 'Óptimo';
+  suggestedResource?: string;
+  subtopics?: SubtopicBlindSpot[];
+}
+
+export interface GroupBlindSpots {
+  groupCode: string;
+  collectionName: string;
+  topics: TopicBlindSpot[];
+}
