@@ -8,11 +8,13 @@
 
   <nav class="breadcrumb">
     <a routerLink="/docentes/colecciones">Mis colecciones</a> <span>/</span>
-    <a [routerLink]="['/docentes/colecciones', collectionName()]">{{ collectionName() }}</a> <span>/</span> Tema {{ topicId() }}
+    <a [routerLink]="['/docentes/colecciones', collectionName()]">{{ collectionName() }}</a>
+<span>/</span>
+{{ topicName() }}
   </nav>
 
   <div class="page-header">
-    <h1>Actividades del tema</h1>
+    <h1>Actividades de {{ topicName() }}</h1>
     <button class="btn-accent" (click)="goNew()">+ Nueva Actividad</button>
   </div>
 
