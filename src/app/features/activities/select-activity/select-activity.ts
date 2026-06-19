@@ -13,6 +13,7 @@ export class SelectActivity {
 
   collectionName = this.route.snapshot.paramMap.get('collectionName') || '';
   topicId = this.route.snapshot.paramMap.get('topicId') || '';
+  topicName = signal(this.route.snapshot.paramMap.get('topicId') || '');
 
   goManual(): void {
     this.router.navigate(['/docentes/colecciones', this.collectionName, 'temas', this.topicId, 'actividades', 'manual']);
