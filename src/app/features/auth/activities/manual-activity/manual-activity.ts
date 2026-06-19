@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ActivityService } from '../../../core/services/activity.service';
-import { TopicService } from '../../../core/services/topic.service';
 import { Question } from '../../../shared/models/models';
 
 @Component({
@@ -15,12 +14,9 @@ export class ManualActivity implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private actSvc = inject(ActivityService);
-  private topicSvc = inject(TopicService);
 
   collectionName = signal('');
   topicId = signal(0);
-  topicName = signal('');
-
   activityTitle = signal('');
   titleError = signal('');
   loading = signal(false);
@@ -31,16 +27,7 @@ export class ManualActivity implements OnInit {
   ngOnInit(): void {
     this.collectionName.set(this.route.snapshot.paramMap.get('collectionName') || '');
     this.topicId.set(Number(this.route.snapshot.paramMap.get('topicId') || 0));
-
-    this.loadTopicName();
     this.addQuestion();
-  }
-
-  loadTopicName(): void {
-    this.topicSvc.getById(this.topicId()).subscribe({
-      next: topic => this.topicName.set(topic.name),
-      error: () => this.topicName.set(`Tema ${this.topicId()}`),
-    });
   }
 
   addQuestion(): void {
@@ -78,55 +65,33 @@ export class ManualActivity implements OnInit {
   }
 
   save(): void {
-    if (!this.activityTitle().trim()) {
-      this.titleError.set('El título es obligatorio');
-      return;
-    }
-
-    if (this.questions().length === 0) {
-      this.showToast('Agrega al menos una pregunta', 'error');
-      return;
-    }
+    if (!this.activityTitle().trim()) { this.titleError.set('El título es obligatorio'); return; }
+    if (this.questions().length === 0) { this.showToast('Agrega al menos una pregunta', 'error'); return; }
 
     for (let i = 0; i < this.questions().length; i++) {
       const q = this.questions()[i];
-
       if (!q.statement.trim()) {
-        this.showToast(`La pregunta ${i + 1} no tiene enunciado`, 'error');
-        return;
+        this.showToast(`La pregunta ${i + 1} no tiene enunciado`, 'error'); return;
       }
-
       const opts = q.options ?? [];
-
       if (opts.length === 0) {
-        this.showToast(`La pregunta ${i + 1} no tiene opciones`, 'error');
-        return;
+        this.showToast(`La pregunta ${i + 1} no tiene opciones`, 'error'); return;
       }
-
       for (let j = 0; j < opts.length; j++) {
         if (!opts[j].text.trim()) {
-          this.showToast(`La pregunta ${i + 1}, opción ${j + 1} está vacía`, 'error');
-          return;
+          this.showToast(`La pregunta ${i + 1}, opción ${j + 1} está vacía`, 'error'); return;
         }
       }
-
       if (!opts.some(o => o.correct)) {
-        this.showToast(`La pregunta ${i + 1} no tiene ninguna opción marcada como correcta`, 'error');
-        return;
+        this.showToast(`La pregunta ${i + 1} no tiene ninguna opción marcada como correcta`, 'error'); return;
       }
     }
 
     this.loading.set(true);
-
-    this.actSvc.create(this.topicId(), {
-      title: this.activityTitle(),
-      questions: this.questions(),
-    }).subscribe({
+    this.actSvc.create(this.topicId(), { title: this.activityTitle(), questions: this.questions() }).subscribe({
       next: () => {
         this.showToast('Actividad creada con éxito', 'success');
-        setTimeout(() => {
-          this.router.navigate(['/docentes/colecciones', this.collectionName(), 'temas', this.topicId()]);
-        }, 1500);
+        setTimeout(() => this.router.navigate(['/docentes/colecciones', this.collectionName(), 'temas', this.topicId()]), 1500);
       },
       error: (e: { error?: { message?: string } }) => {
         this.showToast(e?.error?.message || 'Error al crear actividad', 'error');

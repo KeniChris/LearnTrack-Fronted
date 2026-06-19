@@ -1,0 +1,71 @@
+<div class="page-container">
+  @if (toast()?.type === 'success') {
+    <div class="toast success">&#10003; {{ toast()?.msg }}</div>
+  }
+  @if (toast()?.type === 'error') {
+    <div class="toast error">&#10007; {{ toast()?.msg }}</div>
+  }
+
+  <nav class="breadcrumb">
+    <a routerLink="/docentes/estudiantes">Mis estudiantes</a> <span>/</span>
+    <a [routerLink]="['/docentes/estudiantes', groupCode()]">{{ groupCode() }}</a> <span>/</span> Estadísticas
+  </nav>
+
+  <div class="stats-header">
+    <h1>Reportes del grupo</h1>
+    <button class="btn-dark" (click)="showModal.set(true)">+ Generar reporte PDF</button>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state"><p class="empty-msg">Cargando...</p></div>
+  }
+
+  @if (!loading() && reports().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📄</div>
+      <p class="empty-msg">No hay reportes generados</p>
+      <p class="empty-sub">Genera un reporte PDF para enviarlo al correo institucional</p>
+    </div>
+  }
+
+  @for (r of reports(); track r.id) {
+    <div class="report-card">
+      <div class="report-icon">📄</div>
+      <div style="flex:1">
+        <strong>{{ r.collectionName }}</strong>
+        <p style="font-size:12px;color:#666;margin:4px 0 0">Grupo: {{ r.groupCode }} &nbsp;·&nbsp; {{ r.createdAt | slice:0:10 }}</p>
+        @if (r.sentTo) {
+          <p style="font-size:12px;color:#888;margin:2px 0 0">Enviado a: {{ r.sentTo }}</p>
+        }
+      </div>
+      @if (r.fileUrl) {
+        <a [href]="r.fileUrl" target="_blank" class="btn-outline" style="font-size:12px">Ver PDF</a>
+      }
+    </div>
+  }
+
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="showModal.set(false)">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Generar Reporte PDF</h3>
+        <div class="form-field">
+          <label class="form-label">Nombre de la colección</label>
+          <input class="form-input" [class.error]="collectionError()" placeholder="Ej: Biología Celular"
+            [value]="collectionName()" (input)="collectionName.set($any($event.target).value); collectionError.set('')" />
+          @if (collectionError()) { <span class="field-error">{{ collectionError() }}</span> }
+        </div>
+        <div class="form-field">
+          <label class="form-label">Correo adicional <span style="color:#999;font-size:12px">(opcional)</span></label>
+          <input class="form-input" type="email" placeholder="otro@correo.com"
+            [value]="optionalEmail()" (input)="optionalEmail.set($any($event.target).value)" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="sendReport()" [disabled]="sending()">
+            {{ sending() ? 'Generando...' : 'Generar y enviar' }}
+          </button>
+          <button class="btn-secondary" (click)="showModal.set(false)">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

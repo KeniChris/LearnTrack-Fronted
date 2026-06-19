@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ActivityService } from '../../../core/services/activity.service';
-import { TopicService } from '../../../core/services/topic.service';
 import { Activity } from '../../../shared/models/models';
 
 @Component({
@@ -14,11 +13,9 @@ export class TopicDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private actSvc = inject(ActivityService);
-  private topicSvc = inject(TopicService);
 
   collectionName = signal('');
   topicId = signal(0);
-  topicName = signal('');
   activities = signal<Activity[]>([]);
   loading = signal(false);
   toast = signal<{ msg: string; type: string } | null>(null);
@@ -26,25 +23,13 @@ export class TopicDetail implements OnInit {
   ngOnInit(): void {
     this.collectionName.set(this.route.snapshot.paramMap.get('collectionName') || '');
     this.topicId.set(Number(this.route.snapshot.paramMap.get('topicId') || 0));
-
-    this.loadTopicName();
     this.load();
-  }
-
-  loadTopicName(): void {
-    this.topicSvc.getById(this.topicId()).subscribe({
-      next: topic => this.topicName.set(topic.name),
-      error: () => this.topicName.set(`Tema ${this.topicId()}`),
-    });
   }
 
   load(): void {
     this.loading.set(true);
     this.actSvc.getByTopic(this.topicId()).subscribe({
-      next: d => {
-        this.activities.set(d);
-        this.loading.set(false);
-      },
+      next: d => { this.activities.set(d); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
   }
@@ -55,12 +40,8 @@ export class TopicDetail implements OnInit {
 
   deleteActivity(id: number): void {
     if (!confirm('¿Eliminar esta actividad?')) return;
-
     this.actSvc.delete(id).subscribe({
-      next: () => {
-        this.load();
-        this.showToast('Actividad eliminada', 'success');
-      },
+      next: () => { this.load(); this.showToast('Actividad eliminada', 'success'); },
       error: () => this.showToast('Error al eliminar', 'error'),
     });
   }

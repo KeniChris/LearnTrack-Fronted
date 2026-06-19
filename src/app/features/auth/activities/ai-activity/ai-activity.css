@@ -1,0 +1,13 @@
+.page-title { font-size:26px; font-weight:700; margin-bottom:6px; }
+.page-sub { color:#666; font-size:14px; margin-bottom:24px; }
+.file-drop { position:relative; border:2px dashed #C4B5D9; border-radius:10px; padding:28px 20px; text-align:center; cursor:pointer; transition:border-color .2s; }
+.file-drop.has-file { border-color:#7C5CBF; background:#F5F0FF; }
+.file-drop:hover { border-color:#7C5CBF; }
+.file-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; }
+.file-name { font-size:14px; color:#7C5CBF; font-weight:600; }
+.file-placeholder { font-size:14px; color:#999; }
+.types-row { display:flex; gap:12px; flex-wrap:wrap; }
+.type-checkbox { display:flex; align-items:center; gap:6px; padding:8px 14px; border:1.5px solid #E0D6F0; border-radius:8px; cursor:pointer; font-size:13px; transition:all .15s; }
+.type-checkbox.selected { border-color:#7C5CBF; background:#F5F0FF; color:#7C5CBF; font-weight:600; }
+.type-checkbox input { accent-color:#7C5CBF; }
+.form-actions { display:flex; gap:12px; margin-top:24px; }
