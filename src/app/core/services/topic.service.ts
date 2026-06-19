@@ -12,6 +12,10 @@ export class TopicService {
     return this.http.get<Topic[]>(`${environment.apiUrl}/collections/${encodeURIComponent(collectionName)}/topics`);
   }
 
+  getById(topicId: number): Observable<Topic> {
+    return this.http.get<Topic>(`${environment.apiUrl}/topics/${topicId}`);
+  }
+
   create(collectionName: string, dto: { name: string; orderIdx?: number }): Observable<Topic> {
     const body = { ...dto, orderIdx: dto.orderIdx ?? 0 };
     return this.http.post<Topic>(`${environment.apiUrl}/collections/${encodeURIComponent(collectionName)}/topics`, body);

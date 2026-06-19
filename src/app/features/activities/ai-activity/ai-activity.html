@@ -9,7 +9,7 @@
   <nav class="breadcrumb">
     <a routerLink="/docentes/colecciones">Mis colecciones</a> <span>/</span>
     <a [routerLink]="['/docentes/colecciones', collectionName]">{{ collectionName }}</a> <span>/</span>
-    <a [routerLink]="['/docentes/colecciones', collectionName, 'temas', topicId]">Tema {{ topicId }}</a>
+    <a [routerLink]="['/docentes/colecciones', collectionName, 'temas', topicId]">Tema {{ topicName() }}</a>
     <span>/</span> Generar con IA
   </nav>
 
