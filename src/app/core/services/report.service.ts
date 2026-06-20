@@ -15,4 +15,16 @@ export class ReportService {
   getGroupReports(groupCode: string): Observable<PdfReport[]> {
     return this.http.get<PdfReport[]>(`${environment.apiUrl}/groups/${groupCode}/reports`);
   }
+  downloadCollectionReport(collectionName: string, groupCode: string): Observable<Blob> {
+  return this.http.get(
+    `${environment.apiUrl}/reports/download`,
+    {
+      params: {
+        collectionName,
+        groupCode
+      },
+      responseType: 'blob'
+    }
+  );
+}
 }

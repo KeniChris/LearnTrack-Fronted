@@ -12,16 +12,20 @@
   </nav>
 
   <div class="stats-header">
-    <h1>Dashboard de colección</h1>
-    <button class="btn-dark" (click)="showReportModal.set(true)">Enviar reporte PDF</button>
-  </div>
+  <h1>Dashboard de colección</h1>
+
+  <div class="stats-actions">
+  <button class="btn-outline" (click)="downloadReport()">Descargar PDF</button>
+  <button class="btn-dark" (click)="showReportModal.set(true)">Enviar reporte</button>
+</div>
+</div>
 
   <div class="filters-row">
     <div class="filter-group">
       <label>Mes</label>
       <select [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)">
         @for (m of months; track m; let i = $index) {
-          <option [value]="i">{{ m }} {{ selectedYear() }}</option>
+          <option [ngvalue]="i">{{ m }} {{ selectedYear() }}</option>
         }
       </select>
     </div>
