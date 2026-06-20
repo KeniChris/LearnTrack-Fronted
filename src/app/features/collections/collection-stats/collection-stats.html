@@ -16,7 +16,7 @@
 
   <div class="stats-actions">
   <button class="btn-outline" (click)="downloadReport()">Descargar PDF</button>
-  <button class="btn-dark" (click)="showReportModal.set(true)">Enviar reporte</button>
+  <button class="btn-dark" (click)="openReportModal()">Enviar reporte</button>
 </div>
 </div>
 
@@ -25,7 +25,7 @@
       <label>Mes</label>
       <select [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)">
         @for (m of months; track m; let i = $index) {
-          <option [ngvalue]="i">{{ m }} {{ selectedYear() }}</option>
+          <option [ngValue]="i">{{ m }} {{ selectedYear() }}</option>
         }
       </select>
     </div>
