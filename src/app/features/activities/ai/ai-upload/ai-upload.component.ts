@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,8 +11,7 @@ import { Router } from '@angular/router';
 export class AiUploadComponent {
   selectedFile = signal<File | null>(null);
   dragOver = signal(false);
-
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();
