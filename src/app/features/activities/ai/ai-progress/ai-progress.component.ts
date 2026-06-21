@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,8 +13,7 @@ export class AiProgressComponent implements OnInit, OnDestroy {
   currentStep = signal(0);
 
   private interval: ReturnType<typeof setInterval> | null = null;
-
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.interval = setInterval(() => {

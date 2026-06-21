@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 interface Question {
@@ -43,7 +43,7 @@ export class AiEditorComponent {
 
   expandedId = signal<number | null>(null);
 
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   toggle(id: number): void {
     this.expandedId.set(this.expandedId() === id ? null : id);
