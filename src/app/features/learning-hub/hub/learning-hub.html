@@ -1,0 +1,99 @@
+<div class="page-container">
+  <app-breadcrumb [items]="breadcrumbs"></app-breadcrumb>
+
+  <div class="page-header">
+    <div>
+      <h1>Ruta de Aprendizaje (Análisis de Brechas)</h1>
+      <p class="page-subtitle">Identifica rápidamente los temas que requieren refuerzo en tus estudiantes.</p>
+    </div>
+  </div>
+
+  <div class="filters-card">
+    <div class="filter-group">
+      <label>Seleccionar Grupo</label>
+      <select class="form-input" [ngModel]="selectedGroupCode()" (ngModelChange)="selectedGroupCode.set($event)">
+        <option value="" disabled>-- Selecciona un grupo --</option>
+        @for (g of groups(); track g.id) {
+          <option [value]="g.code">{{ g.name }} ({{ g.code }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Seleccionar Colección</label>
+      <select class="form-input" [ngModel]="selectedCollectionId()" (ngModelChange)="selectedCollectionId.set($event)">
+        <option [value]="0" disabled>-- Selecciona una colección --</option>
+        @for (c of collections(); track c.id) {
+          <option [value]="c.id">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+
+    <button class="btn-primary" (click)="fetchData()" [disabled]="!selectedGroupCode() || !selectedCollectionId()">
+      Generar Análisis
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Estudiante</th>
+          <th>Progreso General</th>
+          <th>Desglose por Tema</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="3" class="empty-state">Analizando progreso...</td></tr>
+        } @else if (paths().length === 0) {
+          <tr><td colspan="3" class="empty-state">Selecciona un grupo y colección para ver los datos.</td></tr>
+        }
+
+        @for (path of paths(); track path.studentEmail) {
+          <tr>
+            <td>
+              <strong>{{ path.studentName }}</strong>
+              <div style="font-size: 11px; color: #888">{{ path.studentEmail }}</div>
+            </td>
+            <td style="width: 200px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="progress-bar" style="flex:1">
+                  <div class="progress-fill" [style.width.%]="path.completionRate"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 600">{{ path.completionRate }}%</span>
+              </div>
+            </td>
+            <td>
+              <div class="nodes-container">
+                @for (node of path.nodes; track node.topicName) {
+                  <div class="node-card" [class.critical]="node.status === 'CRITICAL'">
+                    <div class="node-info">
+                      <span class="node-title">{{ node.topicName }}</span>
+                      <app-status-badge [status]="node.status" [customLabel]="node.score + '%'"></app-status-badge>
+                    </div>
+                    
+                    @if (node.status === 'CRITICAL' || node.score < 50) {
+                      <button class="btn-outline-sm btn-resource" 
+                              (click)="openResourceModal(path.studentName, node.topicName)">
+                        ✨ Ver recurso sugerido
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (showModal()) {
+    <app-suggested-resource-modal 
+      [studentName]="selectedStudentModal()" 
+      [topicName]="selectedTopicModal()"
+      (close)="showModal.set(false)">
+    </app-suggested-resource-modal>
+  }
+</div>
