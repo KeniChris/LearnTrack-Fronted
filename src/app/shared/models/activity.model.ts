@@ -1,5 +1,6 @@
+// QUIZZES (ACTIVITIES)
 export interface Activity {
-  id: number;
+  id?: number;
   title: string;
   description?: string;
   type: 'QUIZ' | 'FLASHCARD';
