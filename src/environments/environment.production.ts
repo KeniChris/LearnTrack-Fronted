@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://learntrack-api.up.railway.app/api/v1'
+  apiUrl: 'https://learntrack-backend-itvq.onrender.com/api/v1'
 };

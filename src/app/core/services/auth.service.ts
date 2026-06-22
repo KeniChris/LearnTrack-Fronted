@@ -1,9 +1,9 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Observable, tap, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { TokenService } from './token.service';
-import { AuthResponse, RegisterDto, User } from '../../shared/models/user.model';
+import { User } from '../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,33 +11,34 @@ export class AuthService {
   private tokenSvc = inject(TokenService);
   private apiUrl = `${environment.apiUrl}/auth`;
 
-  // Signal reactivo para saber si hay sesión activa en cualquier parte de la app
-  private loggedInSignal = signal<boolean>(!!this.tokenSvc.getToken());
-
-  isLoggedIn(): boolean {
-    return this.loggedInSignal();
+  register(dto: { firstName: string; lastName: string; email: string; password: string; roleName: string }): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/register`, dto);
   }
 
-  getUser(): User | null {
-    return this.tokenSvc.getUser();
-  }
-
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
-      tap(response => {
-        this.tokenSvc.saveToken(response.token);
-        this.tokenSvc.saveUser(response.user);
-        this.loggedInSignal.set(true);
+  login(email: string, password: string): Observable<{ token: string; user: User }> {
+    return this.http.post<string>(`${this.apiUrl}/login`, { email, password }).pipe(
+      switchMap(token => {
+        this.tokenSvc.saveToken(token);
+        // Obtenemos el usuario autenticado desde /users/me
+        return this.http.get<User>(`${environment.apiUrl}/users/me`).pipe(
+          tap(user => {
+            this.tokenSvc.saveUser(user);
+          }),
+          map(user => ({ token, user }))
+        );
       })
     );
   }
 
-  register(dto: RegisterDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, dto);
-  }
-
   logout(): void {
     this.tokenSvc.clear();
-    this.loggedInSignal.set(false);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.tokenSvc.getToken();
+  }
+
+  getUser(): User | null {
+    return this.tokenSvc.getUser();
   }
 }
