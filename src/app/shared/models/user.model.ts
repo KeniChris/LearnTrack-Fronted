@@ -1,23 +1,42 @@
+// src/app/shared/models/user.model.ts
 export interface User {
   id: number;
-  firstName: string;
-  lastName: string;
   email: string;
-  role: string;          // 'DOCENTE', 'STUDENT', 'ADMIN'
-  isActive: boolean;     // Aprobación del administrador
-  status: string;        // 'PENDING', 'VERIFIED'
+  firstName?: string;        
+  lastName?: string;
+  roleName: 'ADMIN' | 'DOCENTE' | 'ESTUDIANTE';
+  status: 'PENDING' | 'ACTIVE' | 'REJECTED';
+  verified: boolean;
+  createdAt: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  user: User;
-}
-
+// DTO para el registro 
 export interface RegisterDto {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  roleName: 'DOCENTE' | 'ESTUDIANTE';  // El admin se crea manualmente
+}
+
+// DTO para el login 
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+// Respuesta del login (adaptado: el backend devuelve string, luego obtenemos usuario de /me)
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+// Para el panel de admin (usuarios pendientes)
+export interface PendingUser {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
   roleName: string;
-  courses?: string[];
+  createdAt: string;
 }
