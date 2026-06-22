@@ -1,13 +1,16 @@
 version: '3.8'
 
 services:
+  # ========================
+  # POSTGRES DATABASE
+  # ========================
   db:
     image: postgres:16-alpine
     container_name: learntrack-db
     environment:
-      - POSTGRES_DB=learntrack_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_DB: learntrack_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -20,42 +23,18 @@ services:
     networks:
       - learntrack_net
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: learntrack-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_KEEP_ALIVE=24h
-    entrypoint: /bin/sh
-    command: >
-      -c "
-      echo 'Iniciando servidor Ollama...' &&
-      ollama serve &
-      SERVE_PID=$$! &&
-      sleep 5 &&
-      echo 'Descargando modelo phi3:mini...' &&
-      ollama pull phi3:mini &&
-      echo 'Modelo listo. Manteniendo contenedor activo...' &&
-      tail -f /dev/null
-      "
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - learntrack_net
-
+  # ========================
+  # BACKEND (Spring Boot + Groq)
+  # ========================
   backend:
     build:
-      context: ../learntrack-backend-main # <--- AJUSTA ESTO AL NOMBRE REAL DE TU CARPETA BACKEND
+      context: ../learntrack-backend-main   # Ajusta esta ruta si tu backend está en otro lugar
+      dockerfile: Dockerfile
     container_name: learntrack-backend
     ports:
       - "8080:8080"
     environment:
+      # Base de datos
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/learntrack_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
@@ -63,30 +42,42 @@ services:
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_SQL_INIT_MODE=always
       - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+
+      # Email (Gmail)
       - SPRING_MAIL_HOST=smtp.gmail.com
       - SPRING_MAIL_PORT=587
       - SPRING_MAIL_USERNAME=copitocorp.soporte@gmail.com
-      - SPRING_MAIL_PASSWORD="uglw qpni narq hhya"
+      - SPRING_MAIL_PASSWORD=uglw qpni narq hhya
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-      - SPRING_AI_OPENAI_BASE_URL=http://ollama:11434
-      - SPRING_AI_OPENAI_API_KEY=ollama
-      - SPRING_AI_OPENAI_CHAT_OPTIONS_MODEL=phi3:mini
+
+      # IA con Groq 
+      - GROQ_API_KEY=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
+      - SPRING_AI_OPENAI_BASE_URL=https://api.groq.com/openai/v1
+      - SPRING_AI_OPENAI_CHAT_OPTIONS_MODEL=llama-3.3-70b-versatile
+      - SPRING_AI_OPENAI_CHAT_OPTIONS_TEMPERATURE=0.7
+      - SPRING_AI_OPENAI_CHAT_OPTIONS_MAX_TOKENS=4096
+
+      # JWT Secret
+      - JWT_SECRET=TuClaveSecretaSuperSeguraParaLearnTrackQueDebeSerLargaChangeInProduction
+
     depends_on:
       db:
-        condition: service_healthy
-      ollama:
         condition: service_healthy
     restart: on-failure
     networks:
       - learntrack_net
 
+  # ========================
+  # FRONTEND (Angular + Nginx)
+  # ========================
   frontend:
     build:
-      context: .
+      context: ../learntrack-backend-main  # El contexto es la carpeta donde está este docker-compose (raíz del frontend)
+      dockerfile: Dockerfile
     container_name: learntrack-frontend
     ports:
-      - "80:80" 
+      - "80:80"
     depends_on:
       - backend
     networks:
@@ -94,7 +85,6 @@ services:
 
 volumes:
   postgres_data:
-  ollama_data:
 
 networks:
   learntrack_net:
